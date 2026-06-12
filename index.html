@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>React Modules Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+<body class="bg-gray-100 min-h-screen font-sans text-gray-800">
+
+    <div id="root"></div>
+
+    <script type="text/babel">
+        // ==========================================
+        // 1. MODULE WRAPPER
+        // ==========================================
+        
+        const ModuleLayout = ({ title, onBack, children, colorClass }) => (
+            <div class="max-w-4xl mx-auto p-6">
+                <button 
+                    onClick={onBack}
+                    class="mb-6 text-sm font-semibold text-gray-600 hover:text-gray-900 flex items-center gap-2 transition"
+                >
+                    ← Back to Dashboard
+                </button>
+                <div class={`bg-white rounded-2xl shadow-xl overflow-hidden border-t-8 ${colorClass}`}>
+                    <div class="p-8">
+                        <h2 class="text-3xl font-extrabold mb-4">{title}</h2>
+                        {children}
+                    </div>
+                </div>
+            </div>
+        );
+
+        // ==========================================
+        // 2. INDIVIDUAL MODULES
+        // ==========================================
+
+        const ItalianModule = ({ onBack }) => (
+            <ModuleLayout title="🇮🇹 Italian" onBack={onBack} colorClass="border-green-500">
+                <p>Benvenuto! General Italian language learning content goes here.</p>
+            </ModuleLayout>
+        );
+
+        const ItalianVerbMaster = ({ onBack }) => (
+            <ModuleLayout title="🍝 IT Verb Master" onBack={onBack} colorClass="border-red-500">
+                <p>Coniugazioni! Italian verb conjugation drills and tense practice go here.</p>
+            </ModuleLayout>
+        );
+
+        const FrVerbMaster = ({ onBack }) => (
+            <ModuleLayout title="🇫🇷 FR Verb Master" onBack={onBack} colorClass="border-blue-500">
+                <p>Conjugation practice and French verb drills go here.</p>
+            </ModuleLayout>
+        );
+
+        const FrWordQuest = ({ onBack }) => (
+            <ModuleLayout title="🥖 FR Word Quest" onBack={onBack} colorClass="border-indigo-500">
+                <p>Vocabulary games and French word puzzles go here.</p>
+            </ModuleLayout>
+        );
+
+        const EmojiDrop = ({ onBack }) => (
+            <ModuleLayout title="😀 Emoji Drop" onBack={onBack} colorClass="border-yellow-400">
+                <p>Physics-based emoji dropping game goes here.</p>
+            </ModuleLayout>
+        );
+
+        // --- UPDATED: Interactive Italian Chef Game with Expanded Food Array ---
+        const ItalianChefGame = ({ onBack }) => {
+            // Expanded to 16 ingredients for a nice 4x4 grid
+            const allIngredients = [
+                { emoji: '🥖', name: 'Dough' },
+                { emoji: '🍝', name: 'Pasta' },
+                { emoji: '🍚', name: 'Rice' },
+                { emoji: '🍅', name: 'Tomato' },
+                { emoji: '🧀', name: 'Cheese' },
+                { emoji: '🌿', name: 'Basil' },
+                { emoji: '🧄', name: 'Garlic' },
+                { emoji: '🧅', name: 'Onion' },
+                { emoji: '🥩', name: 'Meat' },
+                { emoji: '🥓', name: 'Pancetta' },
+                { emoji: '🦐', name: 'Seafood' },
+                { emoji: '🥚', name: 'Egg' },
+                { emoji: '🍄', name: 'Mushroom' },
+                { emoji: '🍆', name: 'Eggplant' },
+                { emoji: '🌶️', name: 'Chili' },
+                { emoji: '🫒', name: 'Olive' }
+            ];
+
+            // Expanded recipes using the new ingredients
+            const recipes = [
+                { name: 'Margherita Pizza 🍕', ingredients: ['🥖', '🍅', '🧀', '🌿'] },
+                { name: 'Pasta Pomodoro 🍝', ingredients: ['🍝', '🍅', '🧄', '🌿'] },
+                { name: 'Meat Lasagna 🥘', ingredients: ['🍝', '🍅', '🧀', '🥩'] },
+                { name: 'Spaghetti Carbonara 🥓', ingredients: ['🍝', '🥚', '🧀', '🥓'] },
+                { name: 'Eggplant Parmesan 🍆', ingredients: ['🍆', '🍅', '🧀', '🌿'] },
+                { name: 'Seafood Risotto 🥘', ingredients: ['🍚', '🦐', '🍅', '🧄'] },
+                { name: 'Mushroom Pizza 🍕', ingredients: ['🥖', '🧀', '🍄', '🧄'] },
+                { name: 'Spicy Arrabbiata 🍝', ingredients: ['🍝', '🍅', '🌶️', '🧄'] },
+                { name: 'Capricciosa Pizza 🍕', ingredients: ['🥖', '🍅', '🧀', '🍄', '🫒'] }
+            ];
+
+            const [score, setScore] = React.useState(0);
+            const [currentRecipe, setCurrentRecipe] = React.useState(recipes[0]);
+            const [pot, setPot] = React.useState([]);
+            const [message, setMessage] = React.useState("Order up! Click the ingredients.");
+
+            const handleIngredientClick = (emoji) => {
+                const newPot = [...pot, emoji];
+                setPot(newPot);
+
+                if (newPot.length === currentRecipe.ingredients.length) {
+                    const sortedPot = [...newPot].sort().join('');
+                    const sortedRecipe = [...currentRecipe.ingredients].sort().join('');
+
+                    if (sortedPot === sortedRecipe) {
+                        setScore(score + 100);
+                        setMessage("Perfetto! 👨‍🍳 Delicious!");
+                        setTimeout(() => {
+                            setPot([]);
+                            setCurrentRecipe(recipes[Math.floor(Math.random() * recipes.length)]);
+                            setMessage("New order!");
+                        }, 1200);
+                    } else {
+                        setMessage("Mamma mia! That's wrong. Try again.");
+                        setTimeout(() => {
+                            setPot([]);
+                            setMessage("Remaking the order...");
+                        }, 1200);
+                    }
+                }
+            };
+
+            return (
+                <ModuleLayout title="👨‍🍳 Italian Chef" onBack={onBack} colorClass="border-orange-500">
+                    <div class="bg-orange-50 p-6 rounded-xl border border-orange-200">
+                        
+                        <div class="flex justify-between items-center mb-6">
+                            <h3 class="text-xl font-bold text-orange-900">Score: {score}</h3>
+                            <button onClick={() => { setScore(0); setPot([]); }} class="text-sm text-gray-500 hover:text-red-500 font-semibold">Restart Game</button>
+                        </div>
+
+                        {/* Order Board */}
+                        <div class="bg-white p-4 rounded-lg shadow-sm text-center mb-6 border-2 border-orange-300 dashed">
+                            <p class="text-gray-500 text-sm uppercase tracking-wide font-bold mb-1">Current Order</p>
+                            <p class="text-3xl font-black text-gray-800 mb-2">{currentRecipe.name}</p>
+                            <p class="text-lg tracking-widest bg-orange-100 inline-block px-4 py-1 rounded-full">{currentRecipe.ingredients.join(' + ')}</p>
+                        </div>
+
+                        <p class="text-center text-orange-700 font-medium mb-4 h-6">{message}</p>
+
+                        {/* The Pot */}
+                        <div class="flex justify-center gap-3 mb-8 min-h-[4rem] items-center bg-gray-200 rounded-full p-4 mx-auto max-w-sm shadow-inner">
+                            {pot.length === 0 && <span class="text-gray-400 text-sm font-medium">Empty Pot</span>}
+                            {pot.map((emoji, idx) => (
+                                <span key={idx} class="text-4xl animate-bounce">{emoji}</span>
+                            ))}
+                        </div>
+
+                        {/* Ingredient Buttons (Updated to 4-column grid) */}
+                        <div class="grid grid-cols-3 sm:grid-cols-4 gap-3 max-w-lg mx-auto">
+                            {allIngredients.map((ing) => (
+                                <button 
+                                    key={ing.name}
+                                    onClick={() => handleIngredientClick(ing.emoji)}
+                                    disabled={pot.length >= currentRecipe.ingredients.length}
+                                    class="flex flex-col items-center justify-center p-3 bg-white border-2 border-gray-200 rounded-xl hover:bg-orange-100 hover:border-orange-400 transition transform hover:scale-105 active:scale-95 disabled:opacity-50 disabled:hover:scale-100"
+                                >
+                                    <span class="text-3xl mb-1">{ing.emoji}</span>
+                                    <span class="text-[10px] uppercase font-bold text-gray-500 tracking-wide">{ing.name}</span>
+                                </button>
+                            ))}
+                        </div>
+                        
+                    </div>
+                </ModuleLayout>
+            );
+        };
+
+        // ==========================================
+        // 3. MAIN DASHBOARD COMPONENT
+        // ==========================================
+        
+        function App() {
+            const [activeModule, setActiveModule] = React.useState(null);
+
+            const modules = [
+                { id: 'italian', title: 'Italian', icon: '🇮🇹', color: 'bg-green-100 text-green-700 hover:bg-green-200 border-green-300' },
+                { id: 'it-verb', title: 'IT Verb Master', icon: '🍝', color: 'bg-red-100 text-red-700 hover:bg-red-200 border-red-300' },
+                { id: 'fr-verb', title: 'FR Verb Master', icon: '🇫🇷', color: 'bg-blue-100 text-blue-700 hover:bg-blue-200 border-blue-300' },
+                { id: 'fr-word', title: 'FR Word Quest', icon: '🥖', color: 'bg-indigo-100 text-indigo-700 hover:bg-indigo-200 border-indigo-300' },
+                { id: 'emoji', title: 'Emoji Drop', icon: '😀', color: 'bg-yellow-100 text-yellow-800 hover:bg-yellow-200 border-yellow-300' },
+                { id: 'it-chef', title: 'Italian Chef', icon: '👨‍🍳', color: 'bg-orange-100 text-orange-800 hover:bg-orange-200 border-orange-300' }
+            ];
+
+            const renderActiveModule = () => {
+                const goBack = () => setActiveModule(null);
+
+                switch(activeModule) {
+                    case 'italian': return <ItalianModule onBack={goBack} />;
+                    case 'it-verb': return <ItalianVerbMaster onBack={goBack} />;
+                    case 'fr-verb': return <FrVerbMaster onBack={goBack} />;
+                    case 'fr-word': return <FrWordQuest onBack={goBack} />;
+                    case 'emoji':   return <EmojiDrop onBack={goBack} />;
+                    case 'it-chef': return <ItalianChefGame onBack={goBack} />;
+                    default: return null;
+                }
+            };
+
+            if (activeModule) {
+                return renderActiveModule();
+            }
+
+            return (
+                <div class="max-w-5xl mx-auto p-8">
+                    <header class="text-center mb-12 mt-8">
+                        <h1 class="text-4xl font-black tracking-tight text-gray-900 mb-2">Learning Hub</h1>
+                        <p class="text-gray-500 text-lg">Select a module to begin</p>
+                    </header>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {modules.map(mod => (
+                            <button 
+                                key={mod.id}
+                                onClick={() => setActiveModule(mod.id)}
+                                class={`flex flex-col items-center justify-center p-8 rounded-2xl border-2 transition-all duration-200 transform hover:-translate-y-1 hover:shadow-lg ${mod.color}`}
+                            >
+                                <span class="text-5xl mb-4">{mod.icon}</span>
+                                <span class="text-xl font-bold">{mod.title}</span>
+                            </button>
+                        ))}
+                    </div>
+                </div>
+            );
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
